@@ -1,3 +1,7 @@
+.remote-sync.json
+.ftpignore
+.ftpconfig
+
 # Logs
 logs
 *.log
@@ -71,6 +75,11 @@ typings/
 # dotenv environment variables file
 .env
 .env.test
+back/.env
+back/package-lock.json
+back/node_modules/
+front/package-lock.json
+front/node_modules/
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
