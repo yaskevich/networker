@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="chart-holder">
     <h1>Using Vue 3 (Composition API) with D3</h1>
     <responsive-line-chart :data="data" />
     <div class="buttons">
@@ -10,6 +10,7 @@
 </template>
 
 <script>
+// thanks muratkemaldar: https://github.com/muratkemaldar/using-vue3-with-d3
 import ResponsiveLineChart from "../components/LineChart.vue";
 export default {
   name: "Dashboard",
@@ -34,6 +35,13 @@ export default {
 </script>
 
 <style>
+.chart-holder {
+  text-align: center;
+  color: #2c3e50;
+  max-width: 720px;
+  margin: 100px auto;
+  padding: 0 20px;
+}
 svg {
   /* important for responsiveness */
   display: block;
