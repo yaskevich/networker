@@ -119,28 +119,53 @@ export default {
         .join("line")
         .attr("stroke-width", d => Math.sqrt(d.value));
 
-      const node = svg.append("g")
-        .attr("stroke", "#fff")
-        .attr("stroke-width", 1.5)
-        .selectAll("circle")
-        .data(nodes)
-        .join("circle")
-        .attr("r", 5)
+    //   const node = svg.append("g")
+    //     .attr("stroke", "#fff")
+    //     .attr("stroke-width", 1.5)
+    //     .selectAll("circle")
+    //     .data(nodes)
+    //     .join("circle")
+    //     .attr("r", 5)
+    //     .attr("fill", color)
+    //     .on("mouseover", mouseover)
+    // .on("mousemove", mousemove)
+    // .on("mouseout", mouseleave)
+    //     .call(drag(simulation));
+
+    const node = svg.append("g")
+        // .attr("fill", "currentColor")
+        .attr("stroke-linecap", "round")
+        .attr("stroke-linejoin", "round")
+      .selectAll("circle")
+      .data(nodes)
+      .join("g")
         .attr("fill", color)
-        .on("mouseover", mouseover)
-    .on("mousemove", mousemove)
-    .on("mouseout", mouseleave)
         .call(drag(simulation));
 
+    node.append("circle")
+        .attr("stroke", "red")
+        .attr("stroke-width", 1.5)
+        .attr("r", 4);
+
+    node.append("text")
+        .attr("x", 8)
+        .attr("y", "0.31em")
+        .text(d => d.id)
+      .clone(true).lower()
+        .attr("fill", "none")
+        .attr("stroke", "white")
+        .attr("stroke-width", 3);
       // node.append("title")
       //     .text(d => d.id);
+
 
       simulation.on("tick", () => {
 
           const radius  = 6;
-        node
-        .attr("cx", function(d) { return d.x = Math.max(radius, Math.min(width - radius, d.x)); })
-        .attr("cy", function(d) { return d.y = Math.max(radius, Math.min(height - radius, d.y)); });
+           node.attr("transform", d => `translate(${d.x},${d.y})`);
+        // circles
+        // .attr("cx", function(d) { return d.x = Math.max(radius, Math.min(width - radius, d.x)); })
+        // .attr("cy", function(d) { return d.y = Math.max(radius, Math.min(height - radius, d.y)); });
             // .attr("cx", d => d.x)
             // .attr("cy", d => d.y);
             link
@@ -166,3 +191,12 @@ export default {
   },
 };
 </script>
+
+<style>
+
+text {
+font-family: sans-serif;
+font-size: 10px;
+-webkit-touch-callout: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;
+}
+</style>
