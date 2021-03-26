@@ -1,4 +1,5 @@
 <template>
+  <div id="div_template"></div>
   <div ref="resizeRef">
     <svg ref="svgRef">
     </svg>
@@ -43,9 +44,46 @@ export default {
           .on("end", dragended);
     };
 
+
+
 // https://observablehq.com/@d3/force-directed-graph
 
     onMounted(() => {
+      var Tooltip = d3.select("#div_template")
+          .append("div")
+          .style("position", "absolute")
+          .style("display", "none")
+          .attr("class", "tooltip")
+          .style("background-color", "white")
+          .style("border", "solid")
+          .style("border-width", "2px")
+          .style("border-radius", "5px")
+          .style("padding", "5px");
+          console.log("tooltip created");
+      // Three function that change the tooltip when user hover / move / leave a cell
+      var mouseover = function(d) {
+        console.log("mouseover");
+        Tooltip
+          .style("display", "block")
+        // d3.select(this)
+        //   .style("stroke", "black")
+        //   .style("opacity", 1)
+      }
+      var mousemove = function(event, d) {
+        // console.log("mousemove", event.pageX, event.pageY);
+        Tooltip
+          .html(d.id)
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 50) + "px");
+      }
+      var mouseleave = function(d) {
+        console.log("mouseleave");
+        Tooltip
+          .style("display", "none")
+        // d3.select(this)
+        //   .style("stroke", "none")
+        //   .style("opacity", 0.8)
+      }
       console.log("mount");
       const data = props.data;
       const scale = d3.scaleOrdinal(d3.schemeCategory10);
@@ -89,10 +127,13 @@ export default {
         .join("circle")
         .attr("r", 5)
         .attr("fill", color)
+        .on("mouseover", mouseover)
+    .on("mousemove", mousemove)
+    .on("mouseout", mouseleave)
         .call(drag(simulation));
 
-      node.append("title")
-          .text(d => d.id);
+      // node.append("title")
+      //     .text(d => d.id);
 
       simulation.on("tick", () => {
 
