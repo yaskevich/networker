@@ -162,10 +162,10 @@ export default {
       simulation.on("tick", () => {
 
           const radius  = 6;
-           node.attr("transform", d => `translate(${d.x},${d.y})`);
-        // circles
-        // .attr("cx", function(d) { return d.x = Math.max(radius, Math.min(width - radius, d.x)); })
-        // .attr("cy", function(d) { return d.y = Math.max(radius, Math.min(height - radius, d.y)); });
+           node
+            .attr("transform", d => `translate(${d.x = Math.max(radius, Math.min(width - radius, d.x))},${d.y  = Math.max(radius, Math.min(height - radius, d.y))})`);
+            // .attr("cx", function(d) { return d.x = Math.max(radius, Math.min(width - radius, d.x)); })
+            // .attr("cy", function(d) { return d.y = Math.max(radius, Math.min(height - radius, d.y)); });
             // .attr("cx", d => d.x)
             // .attr("cy", d => d.y);
             link
