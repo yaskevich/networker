@@ -363,9 +363,9 @@ export default {
 .chart-holder {
   text-align: center;
   color: #2c3e50;
-  max-width: 720px;
-  margin: 100px auto;
-  padding: 0 20px;
+  /* max-width: 720px; */
+  /* margin: 100px auto;
+  padding: 0 20px; */
 }
 svg {
   /* important for responsiveness */

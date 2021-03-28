@@ -4,9 +4,13 @@
     <svg ref="svgRef">
     </svg>
   </div>
+  <InputText type="text" v-model="value" placeholder="Имя" />
+  <Button label="Submit" />
 </template>
 
 <script>
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
 import { onMounted, ref, watchEffect } from "vue";
 import * as d3 from "d3";
 import useResizeObserver from "@/resize";
@@ -85,6 +89,7 @@ export default {
         //   .style("opacity", 0.8)
       }
       console.log("mount");
+      const radius  = 8;
       const data = props.data;
       const scale = d3.scaleOrdinal(d3.schemeCategory10);
       const color = (d) => {
@@ -145,7 +150,7 @@ export default {
     node.append("circle")
         .attr("stroke", "red")
         .attr("stroke-width", 1.5)
-        .attr("r", 4);
+        .attr("r", radius);
 
     node.append("text")
         .attr("x", 8)
@@ -161,7 +166,7 @@ export default {
 
       simulation.on("tick", () => {
 
-          const radius  = 6;
+
            node
             .attr("transform", d => `translate(${d.x = Math.max(radius, Math.min(width - radius, d.x))},${d.y  = Math.max(radius, Math.min(height - radius, d.y))})`);
             // .attr("cx", function(d) { return d.x = Math.max(radius, Math.min(width - radius, d.x)); })
