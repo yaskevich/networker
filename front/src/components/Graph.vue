@@ -194,6 +194,9 @@ export default {
     });
     return { svgRef, resizeRef };
   },
+  components: {
+    Button, InputText
+  }
 };
 </script>
 
