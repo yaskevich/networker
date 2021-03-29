@@ -4,8 +4,8 @@
     <svg ref="svgRef">
     </svg>
   </div>
-  <InputText type="text" v-model="value" placeholder="Имя" />
-  <Button label="Submit" />
+  <InputText type="text" v-model="name" placeholder="Имя" />
+  <Button label="Submit" @click="submitPerson()"/>
 </template>
 
 <script>
@@ -23,6 +23,14 @@ export default {
     // create another ref to observe resizing, since observing SVGs doesn't work!
     const { resizeRef, resizeState } = useResizeObserver();
     console.log("setup");
+    const scale = d3.scaleOrdinal(d3.schemeCategory10);
+    const color = (d) => {
+      // console.log(d.group);
+      return scale(d.group);
+    };
+    let simulation;
+    let node;
+    let link;
     const drag = simulation => {
 
     function dragstarted(event) {
@@ -90,12 +98,7 @@ export default {
       }
       console.log("mount");
       const radius  = 8;
-      const data = props.data;
-      const scale = d3.scaleOrdinal(d3.schemeCategory10);
-      const color = (d) => {
-        // console.log(d.group);
-        return scale(d.group);
-      };
+
       // pass ref with DOM element to D3, when mounted (DOM available)
       const svg = d3.select(svgRef.value);
       // whenever any dependencies (like data, resizeState) change, call this!
@@ -103,11 +106,10 @@ export default {
       height *=3;
       console.log("dims", width, height);
 
-      const links = data.links.map(d => Object.create(d));
-      const nodes = data.nodes; //.map(d => Object.create(d));
+      const links = props.data.links.map(d => Object.create(d));
       // console.log(data.nodes);
 
-      const simulation = d3.forceSimulation(nodes)
+      simulation = d3.forceSimulation(props.data.nodes)
           .force("link", d3.forceLink(links).id(d => d.id))
           .force("charge", d3.forceManyBody())
           .force("center", d3.forceCenter(width / 2, height / 2));
@@ -116,7 +118,7 @@ export default {
           svg.attr("viewBox", [0, 0, width, height]);
 
 
-      const link = svg.append("g")
+      link = svg.append("g")
         .attr("stroke", "#999")
         .attr("stroke-opacity", 0.6)
         .selectAll("line")
@@ -128,7 +130,7 @@ export default {
     //     .attr("stroke", "#fff")
     //     .attr("stroke-width", 1.5)
     //     .selectAll("circle")
-    //     .data(nodes)
+    //     .data(props.data.nodes)
     //     .join("circle")
     //     .attr("r", 5)
     //     .attr("fill", color)
@@ -137,12 +139,12 @@ export default {
     // .on("mouseout", mouseleave)
     //     .call(drag(simulation));
 
-    const node = svg.append("g")
+      node = svg.append("g")
         // .attr("fill", "currentColor")
         .attr("stroke-linecap", "round")
         .attr("stroke-linejoin", "round")
       .selectAll("circle")
-      .data(nodes)
+      .data(props.data.nodes)
       .join("g")
         .attr("fill", color)
         .call(drag(simulation));
@@ -165,8 +167,6 @@ export default {
 
 
       simulation.on("tick", () => {
-
-
            node
             .attr("transform", d => `translate(${d.x = Math.max(radius, Math.min(width - radius, d.x))},${d.y  = Math.max(radius, Math.min(height - radius, d.y))})`);
             // .attr("cx", function(d) { return d.x = Math.max(radius, Math.min(width - radius, d.x)); })
@@ -192,7 +192,30 @@ export default {
 
       });
     });
-    return { svgRef, resizeRef };
+    const name  = ref('');
+    const submitPerson = () => {
+      if (name.value) {
+          console.log("click", name.value);
+          props.data.nodes.push({"id": name.value, "group": 9});
+          node = node
+       .data(props.data.nodes, d => d.id)
+       .join(enter => enter.append("circle")
+         .attr("r", 8)
+         .attr("fill", d => color(d.id)));
+
+         const links = props.data.links.map(d => Object.create(d));
+
+         link = link
+        .data(links, d => [d.source, d.target])
+        .join("line");
+
+          simulation.nodes(props.data.nodes);
+          // simulation.force("link").links(props.data.links);
+          simulation.alpha(1).restart();
+      }
+
+    }
+    return { svgRef, resizeRef, submitPerson, name };
   },
   components: {
     Button, InputText
