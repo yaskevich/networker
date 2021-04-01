@@ -16,8 +16,8 @@ export default {
     return {
       data: {
         "nodes": [
-          {"id": "Myriel", "group": 1},
-          {"id": "Napoleon", "group": 1},
+          {"id": "Myriel", "group": 2},
+          {"id": "Napoleon", "group": 2},
           {"id": "Mlle.Baptistine", "group": 1},
           {"id": "Mme.Magloire", "group": 1},
           // {"id": "CountessdeLo", "group": 1},
