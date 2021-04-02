@@ -95,7 +95,7 @@ export default {
           // {"id": "Mme.Hucheloup", "group": 8}
         ],
         "links": [
-          {"source": "Napoleon", "target": "Myriel", "value": 1},
+          {"source": "Napoleon", "target": "Myriel", "value": 1, "type": "ok"},
           // {"source": "Mlle.Baptistine", "target": "Myriel", "value": 8},
           // {"source": "Mme.Magloire", "target": "Myriel", "value": 10},
           // {"source": "Mme.Magloire", "target": "Mlle.Baptistine", "value": 6},

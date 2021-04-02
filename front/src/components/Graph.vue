@@ -74,7 +74,10 @@ export default {
             link = link
                 .data(props.data.links, d => [d.source, d.target])
                 .join("line")
-                .attr("stroke-width", d => 3*Math.sqrt(d.value));
+                .attr("stroke-width", d => 3*Math.sqrt(d.value))
+                .join("path")
+                .attr("stroke", d => color(d.type))
+                .attr("marker-end", d => `url(${new URL(`#arrow-${d.type}`, location)})`);
 
             sim.nodes(props.data.nodes);
             sim.force("link").links(props.data.links);
@@ -176,6 +179,22 @@ export default {
             svg
                 .attr("viewBox", [0, 0, width, height]);
 
+            const types = ["ok"];
+            // https://observablehq.com/@d3/mobile-patent-suits?collection=@d3/d3-force
+              // Per-type markers, as they don't inherit styles.
+                svg.append("defs").selectAll("marker")
+                  .data(types)
+                  .join("marker")
+                    .attr("id", d => `arrow-${d}`)
+                    .attr("viewBox", "0 -5 10 10")
+                    .attr("refX", 15)
+                    .attr("refY", -0.5)
+                    .attr("markerWidth", 6)
+                    .attr("markerHeight", 6)
+                    .attr("orient", "auto")
+                  .append("path")
+                    .attr("fill", color)
+                    .attr("d", "M0,-5L10,0L0,5");
 
             link = svg.append("g")
                 .attr("stroke", "#000")
