@@ -5,12 +5,14 @@
     </svg>
   </div>
   <InputText type="text" v-model="name" placeholder="Имя" />
+  <Dropdown v-model="type" :options="types" optionLabel="title" placeholder="Тип" />
   <Button label="Submit" @click="submitPerson()"/>
 </template>
 
 <script>
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import Dropdown from 'primevue/dropdown';
 import { onMounted, ref, watchEffect } from "vue";
 import * as d3 from "d3";
 import useResizeObserver from "@/resize";
@@ -220,6 +222,8 @@ export default {
             // });
         });
         const name = ref('');
+        const type = ref('');
+        const types = [{title: 'ok', code: 1}, {title: 'bad', code: 2}];
         const submitPerson = () => {
             if (name.value) {
                 console.log("click", name.value);
@@ -236,12 +240,15 @@ export default {
             svgRef,
             resizeRef,
             submitPerson,
-            name
+            name,
+            type,
+            types,
         };
     },
     components: {
         Button,
-        InputText
+        InputText,
+        Dropdown
     }
 };
 </script>
