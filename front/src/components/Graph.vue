@@ -4,12 +4,12 @@
     <svg ref="svgRef">
     </svg>
   </div>
-  <InputText type="text" v-model="name" placeholder="Имя" />
-  <Dropdown v-model="type" :options="types" optionLabel="title" placeholder="Тип" />
+  <InputText type="text" v-model="name" placeholder="Name" @keyup.enter="submitPerson"/>
+  <Dropdown v-model="type" :options="types" optionLabel="title" placeholder="Type" />
   <Button label="Submit" @click="submitPerson()"/>
 </template>
 
-<script>
+<script lang="ts">
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
@@ -222,15 +222,16 @@ export default {
             // });
         });
         const name = ref('');
-        const type = ref('');
-        const types = [{title: 'ok', code: 1}, {title: 'bad', code: 2}];
+        const types = [{title: 'Person', code: 1}, {title: 'Organization', code: 2}];
+        const type = ref(types[0]);
         const submitPerson = () => {
             if (name.value) {
-                console.log("click", name.value);
+                console.log("click", name.value, type.value?.code);
                 props.data.nodes.push({
                     "id": name.value,
-                    "group": 9
+                    "group": Number(type.value?.code),
                 });
+                name.value = '';
                 updateGraph();
 
             }
