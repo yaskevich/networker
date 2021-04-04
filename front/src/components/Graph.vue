@@ -56,13 +56,20 @@ export default {
                 .on("mouseover", mouseover)
                 .on("mousemove", mousemove)
                 .on("mouseout", mouseleave)
+
                 .call(drag(sim));
 
             node.append("circle")
-                .attr("stroke", "white")
+                // .attr("stroke", "white")
+                .on("click", function(event, d) {
+                  window.event.stopPropagation();
+                  console.log("d", d);
+                  d3.select(this).attr("stroke", "black");
+                })
                 .attr("stroke-width", 1.5)
                 .attr("r", radius)
                 .attr("fill", color);
+
 
             node.append("text")
                 .attr("x", 8)
@@ -222,7 +229,7 @@ export default {
             // });
         });
         const name = ref('');
-        const types = [{title: 'Person', code: 1}, {title: 'Organization', code: 2}];
+        const types = [{title: 'Person', code: 1}, {title: 'Organization', code: 2}, {title: 'Place', code: 3}];
         const type = ref(types[0]);
         const submitPerson = () => {
             if (name.value) {
