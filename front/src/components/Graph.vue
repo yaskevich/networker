@@ -31,8 +31,10 @@ export default {
         let sim;
         let node;
         let link;
+        let edgepaths;
+        let edgelabels;
         let Tooltip;
-        const radius = 8;
+        const radius = 12;
 
         const ticked = () => {
             node
@@ -46,6 +48,9 @@ export default {
                 .attr("y1", d => d.source.y)
                 .attr("x2", d => d.target.x)
                 .attr("y2", d => d.target.y);
+
+          edgepaths.attr('d', d => 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y);
+
         }
 
         const updateGraph = () => {
@@ -66,9 +71,12 @@ export default {
                   console.log("d", d);
                   d3.select(this).attr("stroke", "black");
                 })
-                .attr("stroke-width", 1.5)
+                // .attr("stroke-width", 1.5)
                 .attr("r", radius)
-                .attr("fill", color);
+                .attr("fill", color)
+                .style("stroke", "grey")
+                .style("stroke-opacity",0.3)
+                .style("stroke-width", 10);
 
 
             node.append("text")
@@ -83,10 +91,56 @@ export default {
             link = link
                 .data(props.data.links, d => [d.source, d.target])
                 .join("line")
-                .attr("stroke-width", d => 3*Math.sqrt(d.value))
+                // .attr("stroke-width", d => 3*Math.sqrt(d.value))
+                .attr("stroke-width", 2)
                 .join("path")
-                .attr("stroke", d => color(d.type))
-                .attr("marker-end", d => `url(${new URL(`#arrow-${d.type}`, location)})`);
+                // .attr("stroke", d => color(d.type))
+                .attr("stroke", "gray")
+                // .attr("marker-end", d => `url(${new URL(`#arrow-${d.type}`, location)})`);
+                .attr('marker-end','url(#arrowhead)');
+
+
+                edgepaths.data(props.data.links)
+                .enter()
+                .append('path')
+                .attr('class', 'edgepath')
+                .attr('fill-opacity', 0)
+                .attr('stroke-opacity', 0)
+                .attr('id', function (d, i) {return 'edgepath' + i})
+                .style("pointer-events", "none");
+
+
+
+                edgelabels.data(props.data.links)
+                .enter()
+                .append('text')
+                .style("pointer-events", "none")
+                .attr('class', 'edgelabel')
+                .attr('id', function (d, i) {return 'edgelabel' + i})
+                .attr('font-size', 10)
+                .attr('fill', '#aaa');
+
+
+                edgelabels.append('textPath') //To render text along the shape of a <path>, enclose the text in a <textPath> element that has an href attribute with a reference to the <path> element.
+                .attr('xlink:href', function (d, i) {return '#edgepath' + i})
+                .style("text-anchor", "middle")
+                .style("pointer-events", "none")
+                .attr("startOffset", "50%")
+                .text(d => "hi"+d.type);
+
+
+                // var link_label = svg.selectAll(".link_label")
+                //     .data(links)
+                //     .enter()
+                //     .append("text")
+                //     .text(function(d, i) {
+                //         return d.n;
+                //     });
+
+                // link.join("text")
+                // .attr("dy", 5)
+                // // .attr("filter", "url(#solid)")
+                // .text(d => d.type);
 
             sim.nodes(props.data.nodes);
             sim.force("link").links(props.data.links);
@@ -195,23 +249,37 @@ export default {
             const types = ["ok"];
             // https://observablehq.com/@d3/mobile-patent-suits?collection=@d3/d3-force
               // Per-type markers, as they don't inherit styles.
-                svg.append("defs").selectAll("marker")
-                  .data(types)
-                  .join("marker")
-                    .attr("id", d => `arrow-${d}`)
-                    .attr("viewBox", "0 -5 10 10")
-                    .attr("refX", 15)
-                    .attr("refY", -0.5)
-                    .attr("markerWidth", 6)
-                    .attr("markerHeight", 6)
-                    .attr("orient", "auto")
-                  .append("path")
-                    .attr("fill", color)
-                    .attr("d", "M0,-5L10,0L0,5");
+              svg.append('defs').append('marker')
+                .attr("id",'arrowhead')
+                .attr('viewBox','-0 -5 10 10') //the bound of the SVG viewport for the current SVG fragment. defines a coordinate system 10 wide and 10 high starting on (0,-5)
+                .attr('refX', 18) // x coordinate for the reference point of the marker. If circle is bigger, this need to be bigger.
+                .attr('refY', 0)
+                .attr('orient', 'auto')
+                .attr('markerWidth', 7)
+                .attr('markerHeight', 7)
+                .attr('xoverflow', 'visible')
+                .append('svg:path')
+                .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
+                .attr('fill', '#999')
+                .style('stroke', 'none');
+
+                // svg.append("defs").selectAll("marker")
+                //   .data(types)
+                //   .join("marker")
+                //     .attr("id", d => `arrow-${d}`)
+                //     .attr("viewBox", "0 -5 10 10")
+                //     .attr("refX", 15)
+                //     .attr("refY", -0.5)
+                //     .attr("markerWidth", 6)
+                //     .attr("markerHeight", 6)
+                //     .attr("orient", "auto")
+                //   .append("path")
+                //     .attr("fill", color)
+                //     .attr("d", "M0,-5L10,0L0,5");
 
             link = svg.append("g")
                 .attr("stroke", "#000")
-                .attr("stroke-width", 1.5)
+                .attr("stroke-width", 0.5)
                 .selectAll("line");
 
 
@@ -220,6 +288,12 @@ export default {
                 .attr("stroke-linecap", "round")
                 .attr("stroke-linejoin", "round")
                 .selectAll("g");
+
+
+
+                edgepaths = svg.selectAll(".edgepath") //make path go along with the link provide position for link labels
+                edgelabels = svg.selectAll(".edgelabel");
+
 
 
             updateGraph();
