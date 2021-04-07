@@ -95,7 +95,9 @@ export default {
           // {"id": "Mme.Hucheloup", "group": 8}
         ],
         "links": [
-          {"source": "Ivanov", "target": "Petrov", "value": 1, "type": "ok"},
+          {"source": "Ivanov", "target": "Petrov", "value": 1, "type": "FRIEND_OF"},
+          {"source": "Sidorov", "target": "Ivanov", "value": 1, "type": "HIRED"},
+          {"source": "Ivanov", "target": "Smith", "value": 2, "type": "FOLLOWS"},
           // {"source": "Mlle.Baptistine", "target": "Myriel", "value": 8},
           // {"source": "Mme.Magloire", "target": "Myriel", "value": 10},
           // {"source": "Mme.Magloire", "target": "Mlle.Baptistine", "value": 6},

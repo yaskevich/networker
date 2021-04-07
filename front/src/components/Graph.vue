@@ -34,6 +34,7 @@ export default {
         let edgepaths;
         let edgelabels;
         let Tooltip;
+        let container;
         const radius = 12;
 
         const ticked = () => {
@@ -49,7 +50,20 @@ export default {
                 .attr("x2", d => d.target.x)
                 .attr("y2", d => d.target.y);
 
-          edgepaths.attr('d', d => 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y);
+            edgepaths.attr('d', d => 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y);
+
+            edgelabels.attr('transform', function (d) {
+            if (d.target.x < d.source.x) {
+                const bbox = this.getBBox();
+
+                const rx = bbox.x + bbox.width / 2;
+                const ry = bbox.y + bbox.height / 2;
+                return 'rotate(180 ' + rx + ' ' + ry + ')';
+            }
+            else {
+                return 'rotate(0)';
+            }
+        });
 
         }
 
@@ -99,8 +113,7 @@ export default {
                 // .attr("marker-end", d => `url(${new URL(`#arrow-${d.type}`, location)})`);
                 .attr('marker-end','url(#arrowhead)');
 
-
-                edgepaths.data(props.data.links)
+                edgepaths =   edgepaths.data(props.data.links)
                 .enter()
                 .append('path')
                 .attr('class', 'edgepath')
@@ -109,9 +122,7 @@ export default {
                 .attr('id', function (d, i) {return 'edgepath' + i})
                 .style("pointer-events", "none");
 
-
-
-                edgelabels.data(props.data.links)
+                edgelabels  = edgelabels.data(props.data.links)
                 .enter()
                 .append('text')
                 .style("pointer-events", "none")
@@ -120,23 +131,21 @@ export default {
                 .attr('font-size', 10)
                 .attr('fill', '#aaa');
 
-
                 edgelabels.append('textPath') //To render text along the shape of a <path>, enclose the text in a <textPath> element that has an href attribute with a reference to the <path> element.
                 .attr('xlink:href', function (d, i) {return '#edgepath' + i})
                 .style("text-anchor", "middle")
                 .style("pointer-events", "none")
                 .attr("startOffset", "50%")
-                .text(d => "hi"+d.type);
-
+                .text(d => d.type);
 
                 // var link_label = svg.selectAll(".link_label")
-                //     .data(links)
+                //     .data(props.data.links)
                 //     .enter()
                 //     .append("text")
                 //     .text(function(d, i) {
                 //         return d.n;
                 //     });
-
+                //
                 // link.join("text")
                 // .attr("dy", 5)
                 // // .attr("filter", "url(#solid)")
@@ -218,6 +227,7 @@ export default {
 
             // pass ref with DOM element to D3, when mounted (DOM available)
             const svg = d3.select(svgRef.value);
+            container = svg.append("g");
             // whenever any dependencies (like data, resizeState) change, call this!
             ({
                 width,
@@ -226,6 +236,8 @@ export default {
             height *= 3;
             console.log("dims", width, height);
 
+
+
             const links = props.data.links.map(d => Object.create(d));
             // console.log(data.nodes);
             sim = d3.forceSimulation(props.data.nodes)
@@ -233,7 +245,7 @@ export default {
                 // .force("charge", d3.forceManyBody())
                 .force('collide', d3.forceCollide(function(d){
                     // return d.id === "j" ? 100 : 50
-                    return 50;
+                    return 70;
                   }))
                 .force("charge", d3.forceManyBody().strength(-60))
                 // .force("charge", d3.forceManyBody().strength(-400))
@@ -277,13 +289,13 @@ export default {
                 //     .attr("fill", color)
                 //     .attr("d", "M0,-5L10,0L0,5");
 
-            link = svg.append("g")
+            link = container.append("g")
                 .attr("stroke", "#000")
                 .attr("stroke-width", 0.5)
                 .selectAll("line");
 
 
-            node = svg.append("g")
+            node = container.append("g")
                 .attr("fill", "currentColor")
                 .attr("stroke-linecap", "round")
                 .attr("stroke-linejoin", "round")
@@ -291,8 +303,8 @@ export default {
 
 
 
-                edgepaths = svg.selectAll(".edgepath") //make path go along with the link provide position for link labels
-                edgelabels = svg.selectAll(".edgelabel");
+                edgepaths = container.selectAll(".edgepath");
+                edgelabels = container.selectAll(".edgelabel");
 
 
 
