@@ -26,7 +26,8 @@ export default {
         const { resizeRef, resizeState } = useResizeObserver();
         console.log("setup");
         const scale = d3.scaleOrdinal(d3.schemeCategory10);
-        const color = (d) => { return scale(d.group); };
+        const selIds = new Map();
+        const color = (d) => { return selIds.has(d.id) ? "red": scale(d.group); };
         let width, height;
         let sim;
         let node;
@@ -35,6 +36,7 @@ export default {
         let edgelabels;
         let Tooltip;
         let container;
+
         const radius = 12;
 
         const ticked = () => {
@@ -68,7 +70,7 @@ export default {
         }
 
         const updateGraph = () => {
-
+            selIds.clear();
             node = node.data(props.data.nodes)
                 .join("g")
 
@@ -80,10 +82,27 @@ export default {
 
             node.append("circle")
                 // .attr("stroke", "white")
+                .attr("id", function(d) { return d.id; })
                 .on("click", function(event, d) {
                   window.event.stopPropagation();
-                  console.log("d", d);
-                  d3.select(this).attr("stroke", "black");
+                  console.log("shift", event.shiftKey);
+                  // console.log("d", d);
+                  if (event.shiftKey){
+                    if (selIds.has(d.id)){
+                        selIds.delete(d.id);
+                        d3.select(this).attr("fill", color);
+                    } else {
+                      selIds.set(d.id, d3.select(this));
+                      if(selIds.size>2) {
+                        const firstId = selIds.keys().next().value;
+                        const theNode = selIds.get(firstId);
+                        selIds.delete(firstId);
+                        theNode.attr("fill", color);
+                        console.log("clear", firstId);
+                      }
+                      d3.select(this).attr("fill", "red");
+                    }
+                  }
                 })
                 // .attr("stroke-width", 1.5)
                 .attr("r", radius)
