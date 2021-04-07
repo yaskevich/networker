@@ -113,9 +113,8 @@ export default {
                 // .attr("marker-end", d => `url(${new URL(`#arrow-${d.type}`, location)})`);
                 .attr('marker-end','url(#arrowhead)');
 
-                edgepaths =   edgepaths.data(props.data.links)
-                .enter()
-                .append('path')
+                edgepaths = edgepaths.data(props.data.links)
+                .join('path')
                 .attr('class', 'edgepath')
                 .attr('fill-opacity', 0)
                 .attr('stroke-opacity', 0)
@@ -123,8 +122,7 @@ export default {
                 .style("pointer-events", "none");
 
                 edgelabels  = edgelabels.data(props.data.links)
-                .enter()
-                .append('text')
+                .join('text')
                 .style("pointer-events", "none")
                 .attr('class', 'edgelabel')
                 .attr('id', function (d, i) {return 'edgelabel' + i})
@@ -236,7 +234,14 @@ export default {
             height *= 3;
             console.log("dims", width, height);
 
-
+            svg.call(
+              d3.zoom()
+                  .scaleExtent([.1, 4])
+                  .on("zoom", function(event) {
+                    // console.log("trans", event.transform);
+                    container.attr("transform", event.transform);
+                  })
+            );
 
             const links = props.data.links.map(d => Object.create(d));
             // console.log(data.nodes);
@@ -258,7 +263,7 @@ export default {
             svg
                 .attr("viewBox", [0, 0, width, height]);
 
-            const types = ["ok"];
+            // const types = ["ok"];
             // https://observablehq.com/@d3/mobile-patent-suits?collection=@d3/d3-force
               // Per-type markers, as they don't inherit styles.
               svg.append('defs').append('marker')
@@ -289,24 +294,15 @@ export default {
                 //     .attr("fill", color)
                 //     .attr("d", "M0,-5L10,0L0,5");
 
-            link = container.append("g")
-                .attr("stroke", "#000")
-                .attr("stroke-width", 0.5)
-                .selectAll("line");
-
+            link = container.append("g").selectAll("line");
+            edgepaths = container.append("g").selectAll(".edgepath");
+            edgelabels = container.append("g").selectAll(".edgelabel");
 
             node = container.append("g")
                 .attr("fill", "currentColor")
-                .attr("stroke-linecap", "round")
-                .attr("stroke-linejoin", "round")
+                // .attr("stroke-linecap", "round")
+                // .attr("stroke-linejoin", "round")
                 .selectAll("g");
-
-
-
-                edgepaths = container.selectAll(".edgepath");
-                edgelabels = container.selectAll(".edgelabel");
-
-
 
             updateGraph();
 
@@ -326,9 +322,7 @@ export default {
                 });
                 name.value = '';
                 updateGraph();
-
             }
-
         }
         return {
             svgRef,
