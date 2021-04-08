@@ -4,16 +4,22 @@
     <svg ref="svgRef">
     </svg>
   </div>
+  <div>
   <InputText type="text" v-model="name" placeholder="Name" @keyup.enter="submitPerson"/>
   <Dropdown v-model="type" :options="types" optionLabel="title" placeholder="Type" />
   <Button label="Submit" @click="submitPerson()"/>
+  </div>
+  <div style="margin-top:1rem;">
+    <Dropdown v-model="linkType" :options="linkTypes" optionLabel="title" placeholder="Type" />
+    <Button label="Create link" @click="addLink()" v-if="selIds.size == 2"/>
+  </div>
 </template>
 
 <script lang="ts">
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
-import { onMounted, ref, watchEffect } from "vue";
+import { onMounted, ref, watchEffect, reactive } from "vue";
 import * as d3 from "d3";
 import useResizeObserver from "@/resize";
 export default {
@@ -26,7 +32,7 @@ export default {
         const { resizeRef, resizeState } = useResizeObserver();
         console.log("setup");
         const scale = d3.scaleOrdinal(d3.schemeCategory10);
-        const selIds = new Map();
+        const selIds = reactive(new Map());
         const color = (d) => { return selIds.has(d.id) ? "red": scale(d.group); };
         let width, height;
         let sim;
@@ -331,7 +337,13 @@ export default {
         });
         const name = ref('');
         const types = [{title: 'Person', code: 1}, {title: 'Organization', code: 2}, {title: 'Place', code: 3}];
+        const linkTypes = [{title: 'Friend Of', code: 1}, {title: 'Employee', code: 2}, {title: 'Spouse', code: 3}];
         const type = ref(types[0]);
+        const linkType = ref(linkTypes[0]);
+        const addLink = () => {
+          console.log("+link");
+        };
+
         const submitPerson = () => {
             if (name.value) {
                 console.log("click", name.value, type.value?.code);
@@ -350,6 +362,10 @@ export default {
             name,
             type,
             types,
+            linkType,
+            linkTypes,
+            addLink,
+            selIds,
         };
     },
     components: {
