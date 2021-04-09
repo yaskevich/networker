@@ -5,13 +5,15 @@
     </svg>
   </div>
   <div>
-  <InputText type="text" v-model="name" placeholder="Name" @keyup.enter="submitPerson"/>
-  <Dropdown v-model="type" :options="types" optionLabel="title" placeholder="Type" />
-  <Button label="Submit" @click="submitPerson()"/>
+  <InputText type="text" v-model="name" placeholder="Name" @keyup.enter="addPerson"/>
+  <Dropdown v-model="nodeType" :options="nodeTypes" optionLabel="title" placeholder="Type" />
+  <Button label="Create node" @click="addPerson()"/>
   </div>
   <div style="margin-top:1rem;">
+    {{Array.from(selIds.keys())[0]}}
     <Dropdown v-model="linkType" :options="linkTypes" optionLabel="title" placeholder="Type" />
-    <Button label="Create link" @click="addLink()" v-if="selIds.size == 2"/>
+    {{Array.from(selIds.keys())[1]}}
+    <Button label="Create link" @click="addLink()" :disabled="selIds.size !== 2 ? 'disabled': null"/>
   </div>
 </template>
 
@@ -336,20 +338,25 @@ export default {
             // });
         });
         const name = ref('');
-        const types = [{title: 'Person', code: 1}, {title: 'Organization', code: 2}, {title: 'Place', code: 3}];
-        const linkTypes = [{title: 'Friend Of', code: 1}, {title: 'Employee', code: 2}, {title: 'Spouse', code: 3}];
-        const type = ref(types[0]);
+        const nodeTypes = [{title: 'Person', code: 1}, {title: 'Organization', code: 2}, {title: 'Place', code: 3}];
+        const linkTypes = [{title: 'FRIEND_OF', code: 1}, {title: 'HIRED_BY', code: 2}, {title: 'BORN_IN', code: 3}, {title: 'FOLLOWED', code: 4}, {title: 'FOLLOWING', code: 5}];
+        const nodeType = ref(nodeTypes[0]);
         const linkType = ref(linkTypes[0]);
+
         const addLink = () => {
-          console.log("+link");
+          console.log("+link", linkType.value);
+          props.data.links.push(
+              {"source": Array.from(selIds.keys())[0], "target": Array.from(selIds.keys())[1], "value": linkType.value.code, "type": linkType.value.title},
+            );
+            updateGraph();
         };
 
-        const submitPerson = () => {
+        const addPerson = () => {
             if (name.value) {
-                console.log("click", name.value, type.value?.code);
+                console.log("click", name.value, nodeType.value?.code);
                 props.data.nodes.push({
                     "id": name.value,
-                    "group": Number(type.value?.code),
+                    "group": Number(nodeType.value?.code),
                 });
                 name.value = '';
                 updateGraph();
@@ -358,10 +365,10 @@ export default {
         return {
             svgRef,
             resizeRef,
-            submitPerson,
+            addPerson,
             name,
-            type,
-            types,
+            nodeType,
+            nodeTypes,
             linkType,
             linkTypes,
             addLink,
