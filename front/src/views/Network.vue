@@ -1,6 +1,6 @@
 <template>
   <h1>Network</h1>
-  <div class="chart-holder">
+  <div class="chart-holder-graph">
     <Graph :data="data" />
   </div>
 </template>
@@ -37,7 +37,7 @@ export default {
 </script>
 
 <style>
-.chart-holder {
+.chart-holder-graph {
   text-align: center;
   color: #2c3e50;
   /* max-width: 720px; */
