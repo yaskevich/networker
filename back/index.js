@@ -99,9 +99,12 @@ const __dirname = path.dirname(__filename)
   app.get("/api/test", async (req, res) => {
     console.log("GET params", req.params, "query", req.query)
     const session = driver.session()
-    const person1Name = "Alice"
-    const person2Name = "David"
+    const person1Name = "Alice";
+    const person2Name = "David";
+    let data = [];
     try {
+      // `MATCH (n) DETACH DELETE n`
+      
       // const writeQuery = `MERGE (p1:Person { name: $person1Name })
       //                MERGE (p2:Person { name: $person2Name })
       //                 MERGE (p1)-[:KNOWS]->(p2)
@@ -119,13 +122,20 @@ const __dirname = path.dirname(__filename)
       // })
       // const readQuery = `MATCH (p:Person) WHERE p.name = $personName RETURN p.name AS name`;
       // const readQuery = `MATCH (p:Person)-[:ACTED_IN]->(m:Movie) RETURN p, collect(m.title)`;
-      const readQuery = `MATCH (you {name:$personName})-[:KNOWS]->(friends)
-RETURN you, friends`
+
+//       const readQuery = `MATCH (you {name:$personName})-[:KNOWS]->(friends)
+// RETURN you, friends`
+//       const readResult = await session.readTransaction(tx =>
+//         tx.run(readQuery, { personName: person1Name })
+//       );
+
       const readResult = await session.readTransaction(tx =>
-        tx.run(readQuery, { personName: person1Name })
-      )
+        tx.run(`MATCH (user:Person) RETURN user`)
+      );
       // console.log(person1Name,  readResult.records.map(x=> x.get('name')));
-      console.log(person1Name, readResult.records.map(x => x.get("friends")))
+      // console.log(person1Name, readResult.records.map(x => x.get("friends")))
+      //console.log(readResult.records.map(x => x.get("user").properties.name))
+      data = readResult.records.map(x => x.get("user").properties);
     } catch (error) {
       console.error("Something went wrong: ", error)
     } finally {
@@ -133,7 +143,7 @@ RETURN you, friends`
     }
 
     // res.json(await db...(req.query['id']));
-    res.json({ test: "ok" })
+    res.json(data)
   })
 
   const server = app.listen(port)
